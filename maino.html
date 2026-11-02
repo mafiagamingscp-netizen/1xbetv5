@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>1X4</title>
+<script src="wallet.js"></script>
+<style>
+:root{--ink:#090e2a;--panel:#181c3a;--line:#2e335c;--steel:#2a4564;--tx:#f2f4ff;--mut:#9aa3d6;--green:#8fd62a;--orange:#f06514;--red:#ff6b6e;--amber:#f2b84b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--ink)}
+body{margin:0;min-height:100vh;background:var(--ink);color:var(--tx);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",system-ui,sans-serif;line-height:1.5;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:480px;margin:0 auto}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:var(--steel)}
+.logo{font-size:26px;font-weight:900;letter-spacing:1px;direction:ltr}
+.logo i{font-style:normal;color:var(--green)}
+.who{display:flex;align-items:center;gap:8px}
+.idchip{display:flex;align-items:center;gap:8px;background:rgba(9,14,42,.45);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
+.idchip small{color:var(--mut);font-size:11px}
+.idchip b{font-variant-numeric:tabular-nums;letter-spacing:.3px;direction:ltr}
+.icon{width:36px;height:36px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(9,14,42,.45);cursor:pointer}
+.wallet{padding:22px 16px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.wallet .lbl{color:var(--mut);font-size:13px}
+.amount{display:flex;align-items:baseline;gap:8px;margin:2px 0 18px;direction:ltr;justify-content:flex-end}
+.amount span{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.amount small{font-size:15px;color:var(--mut);font-weight:600}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;height:48px;border-radius:10px;font-weight:800;font-size:16px;cursor:pointer;border:0}
+.btn.dep{background:var(--green);color:#16200a}
+.btn.wd{background:transparent;color:var(--tx);border:1.5px solid #4a5189}
+.btn.ord{margin-top:10px;height:42px;font-size:14px;background:var(--raise,#20254a);color:var(--tx);border:1px solid var(--line)}
+.btn:active{transform:translateY(1px)}
+h2{margin:0;font-size:16px;font-weight:800}
+.sec{padding:24px 16px 0}
+.sec>h2{margin-bottom:12px}
+.game{display:grid;grid-template-columns:1fr 168px;align-items:stretch;min-height:150px;margin-bottom:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.game .txt{padding:16px 16px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+.game h3{margin:0;font-size:21px;font-weight:900;direction:ltr;text-align:right}
+.game p{margin:4px 0 0;color:var(--mut);font-size:13px;line-height:1.6}
+.play{align-self:flex-start;display:inline-flex;align-items:center;height:36px;padding:0 20px;border-radius:8px;font-weight:800;font-size:14px;background:var(--orange);color:#fff}
+.game.apple .play{background:var(--green);color:#16200a}
+.art{background:#10143a;border-inline-end:1px solid var(--line);display:block}
+.art svg{width:100%;height:100%;display:block}
+.draw{stroke-dasharray:260;stroke-dashoffset:260;animation:draw 1.4s .25s cubic-bezier(.3,.7,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.draw{animation:none;stroke-dashoffset:0}}
+.hrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.hrow h2{margin:0}.all{color:var(--green);font-size:13px;font-weight:800}
+.sec>.hrow{margin-bottom:12px}
+.list{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px 14px}
+.row+.row{border-top:1px solid var(--line)}
+.dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;font-weight:900}
+.dot.d{background:rgba(143,214,42,.15);color:var(--green)}
+.dot.w{background:rgba(240,101,20,.15);color:var(--orange)}
+.row b{display:block;font-size:14px}
+.row small{color:var(--mut);font-size:12px}
+.end{text-align:left;direction:ltr}
+.end .n{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px}
+.st{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;direction:rtl}
+.st.p{background:rgba(242,184,75,.15);color:var(--amber)}
+.st.ok{background:rgba(143,214,42,.15);color:var(--green)}
+.st.no{background:rgba(255,107,110,.15);color:var(--red)}
+.empty{padding:26px 16px;text-align:center;color:var(--mut);font-size:14px}
+.empty a{display:inline-block;margin-top:10px;color:var(--green);font-weight:800}
+.foot{padding:26px 16px 30px;text-align:center;color:#6c75ad;font-size:11.5px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:.2s}
+.toast.s{opacity:1;transform:translateX(-50%)}
+@media (max-width:360px){.game{grid-template-columns:1fr 128px}.amount span{font-size:38px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="bar">
+  <div class="logo">1<i>X</i>4</div>
+  <div class="who">
+    <div class="idchip" id="idchip" role="button" tabindex="0" aria-label="نسخ رقم اللاعب">
+      <small>ID</small><b id="pid">—</b>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="13" height="13" rx="2.5"/><path d="M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8"/></svg>
+    </div>
+    <button class="icon" id="logout" aria-label="تسجيل الخروج">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+    </button>
+  </div>
+</header>
+<section class="wallet">
+  <div class="lbl">رصيدك</div>
+  <div class="amount"><small>EGP</small><span id="balance">0.00</span></div>
+  <div class="acts">
+    <a class="btn dep" href="deposit%20(2).html">إيداع</a>
+    <a class="btn wd" href="withdrawal.html">سحب</a>
+  </div>
+  <a class="btn ord" href="orders.html">طلباتي</a>
+</section>
+<section class="sec">
+  <h2>الألعاب</h2>
+  <a class="game crash" id="crashLink" href="Crash%20(1).html">
+    <div class="txt">
+      <div><h3>Crash</h3><p>اسحب رهانك قبل أن ينهار المضاعف.</p></div>
+      <span class="play">العب</span>
+    </div>
+    <span class="art" aria-hidden="true">
+      <svg viewBox="0 0 168 150" preserveAspectRatio="xMidYMid meet" style="direction:ltr">
+        <g stroke="#2e335c" stroke-width="1"><path d="M0 120H168M0 90H168M0 60H168M0 30H168"/><path d="M42 0V150M84 0V150M126 0V150"/></g>
+        <path class="draw" d="M10 128 C 54 126, 84 112, 108 78 S 140 28, 154 14" fill="none" stroke="#f06514" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="154" cy="14" r="6" fill="#f06514"/><circle cx="154" cy="14" r="11" fill="none" stroke="#f06514" stroke-opacity=".35"/>
+        <text x="14" y="30" fill="#f2f4ff" font-size="22" font-weight="800" font-family="Segoe UI,Tahoma,sans-serif">3.42x</text>
+      </svg>
+    </span>
+  </a>
+  <a class="game apple" id="appleLink" href="Apple_of_Fortune.html">
+    <div class="txt">
+      <div><h3>Apple Of Fortune</h3><p>اختر التفاحة السليمة وتقدّم صفاً بصف.</p></div>
+      <span class="play">العب</span>
+    </div>
+    <span class="art" aria-hidden="true">
+      <svg viewBox="0 0 168 150" preserveAspectRatio="xMidYMid meet" style="direction:ltr"><g id="apples"></g></svg>
+    </span>
+  </a>
+</section>
+<section class="sec">
+  <div class="hrow"><h2>آخر العمليات</h2><a class="all" href="orders.html">عرض الكل</a></div>
+  <div class="list" id="list"></div>
+</section>
+<p class="foot">ادع واربح</p>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var session=localStorage.getItem('session'),accounts={};
+  try{accounts=JSON.parse(localStorage.getItem('accounts')||'{}')}catch(e){}
+  if(!session||!accounts[session]){location.replace('index.html');return}
+  var uid=X4.uid();
+  $('pid').textContent=uid;
+  $('crashLink').href='Crash%20(1).html?uid='+encodeURIComponent(uid);
+  $('appleLink').href='Apple_of_Fortune.html?uid='+encodeURIComponent(uid);
+  (function(){
+    var safe=[2,1,3,2],h='';
+    for(var r=0;r<4;r++)for(var c=0;c<5;c++){
+      var x=22+c*31,y=122-r*34,ok=(safe[r]===c);
+      h+='<circle cx="'+x+'" cy="'+y+'" r="11" fill="'+(ok?'#8fd62a':'#2e335c')+'"/>'+(ok?'<path d="M'+x+' '+(y-11)+'q3 -6 8 -6" stroke="#8fd62a" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'');
+    }
+    $('apples').innerHTML=h;
+  })();
+  function money(n){return Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+  function renderList(){
+    var mine=function(r){return r.uid===uid};
+    var rows=X4.requests('deposit').filter(mine).map(function(r){r.k='d';return r})
+      .concat(X4.requests('withdrawal').filter(mine).map(function(r){r.k='w';return r}))
+      .sort(function(a,b){return b.createdAt-a.createdAt}).slice(0,5);
+    var box=$('list');box.innerHTML='';
+    if(!rows.length){
+      var e=el('div','empty','لا توجد عمليات بعد.');e.appendChild(document.createElement('br'));
+      var a=el('a',null,'ابدأ بأول إيداع');a.href='deposit%20(2).html';e.appendChild(a);box.appendChild(e);return;
+    }
+    rows.forEach(function(r){
+      var row=el('div','row');
+      row.appendChild(el('span','dot '+r.k,r.k==='d'?'+':'−'));
+      var mid=el('div');mid.appendChild(el('b',null,r.k==='d'?'إيداع':'سحب'));
+      mid.appendChild(el('small',null,(r.method||'')+' · '+new Date(r.createdAt).toLocaleDateString('ar-EG',{day:'numeric',month:'short'})));
+      row.appendChild(mid);
+      var end=el('div','end');end.appendChild(el('div','n',(r.k==='d'?'+':'−')+money(r.amount)));
+      var s=r.status||'قيد المراجعة';
+      end.appendChild(el('span','st '+(s==='مقبول'?'ok':s==='مرفوض'?'no':'p'),s));
+      row.appendChild(end);box.appendChild(row);
+    });
+  }
+  function toast(t){var e=$('toast');e.textContent=t;e.classList.add('s');setTimeout(function(){e.classList.remove('s')},1500)}
+  function copy(){
+    var done=function(){toast('تم نسخ رقم اللاعب')};
+    function fallback(){var t=document.createElement('textarea');t.value=uid;document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){}t.remove()}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(uid).then(done,fallback)}else fallback();
+  }
+  $('idchip').onclick=copy;
+  $('idchip').onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();copy()}};
+  $('logout').onclick=function(){localStorage.removeItem('session');location.href='index.html'};
+  function refresh(){$('balance').textContent=money(X4.balance(uid));renderList()}
+  refresh();
+  window.addEventListener('storage',refresh);
+  window.addEventListener('pageshow',refresh);
+  window.addEventListener('focus',refresh);
+})();
+</script>
+</body>
+</html>

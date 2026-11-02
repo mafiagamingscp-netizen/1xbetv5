@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#E9ECF0">
+<title>تسجيل الدخول</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== أساسيات الصفحة ===== */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;background:#F3F7FC;overflow:hidden}
+body{font-family:'Noto Naskh Arabic','Droid Arabic Naskh',serif;position:relative}
+button,input,select{font-family:inherit}
+
+/* ===== التبديل بين صفحة الدخول وصفحة التسجيل ===== */
+#scLogin{display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;right:0;width:100%;max-width:520px;margin:0 auto;overflow-y:auto;background:#F3F7FC}
+#scLogin.off{display:none}
+#reg{display:none;position:fixed;top:0;bottom:0;left:0;right:0;width:100%;max-width:520px;margin:0 auto;background:#EAEEF3}
+#reg.on{display:block}
+
+/* ===== ستايل صفحة الدخول ===== */
+#scLogin{
+    --hero:#E9ECF0;
+    --form:#F3F7FC;
+    --navy:#0A2A48;
+    --ph:#7D7F83;
+    --line:#D3D9E0;
+    --blue:#4F8AD4;
+    --link:#4A90D9;
+  }
+#scLogin *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+#scLogin button,#scLogin input{font-family:inherit}
+#scLogin .hero{position:relative;flex:0 0 39%;background:var(--hero);overflow:hidden}
+#scLogin .hero svg{position:absolute;inset:0;width:100%;height:100%}
+#scLogin .form{flex:1;background:var(--form);padding:26px 24px calc(env(safe-area-inset-bottom,0px) + 20px)}
+#scLogin h1{font-size:22px;font-weight:700;color:var(--navy);line-height:1.4;margin-bottom:18px}
+#scLogin .field{position:relative;margin-bottom:26px}
+#scLogin .field input{
+    width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;outline:none;
+    font-size:15px;color:var(--navy);padding:14px 0 10px;text-align:right;border-radius:0;
+  }
+#scLogin .field input::placeholder{color:var(--ph)}
+#scLogin .field input:focus{border-bottom-color:var(--blue)}
+#scLogin .field.pw input{padding-left:36px}
+#scLogin .eye{
+    position:absolute;left:0;bottom:6px;width:32px;height:30px;border:0;background:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+#scLogin .btn{
+    width:100%;height:46px;border:0;border-radius:23px;background:var(--blue);color:#fff;
+    font-size:16px;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;
+    transition:opacity .15s;
+  }
+#scLogin .btn:disabled{opacity:.7;cursor:default}
+#scLogin .spin{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+#scLogin .new{display:block;text-align:center;margin-top:70px;font-size:15px;font-weight:700;color:var(--link);text-decoration:none}
+#scLogin .toast{
+    position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 20px);transform:translate(-50%,-30px);
+    background:#C2413A;color:#fff;font-size:14px;padding:11px 16px;border-radius:12px;opacity:0;
+    transition:.25s;z-index:50;max-width:88%;text-align:center;pointer-events:none;
+  }
+#scLogin .toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ===== ستايل صفحة التسجيل ===== */
+#reg{
+    --bg:#EAEEF3;
+    --white:#FFFFFF;
+    --navy:#0F2E4D;
+    --title:#5B84A8;
+    --label:#7C9BB5;
+    --line:#BCC8D3;
+    --blue:#4A90D9;
+    --link:#5B9BE0;
+    --green:#4CB868;
+    --green-soft:#DFF1E5;
+    --chip:#EFF3F7;
+    --hero:#D0E4F5;
+    --icon:#A9C6E0;
+  }
+#reg *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+#reg button,#reg input,#reg select{font-family:inherit}
+#reg .screen{position:absolute;inset:0;display:none;flex-direction:column;background:var(--bg)}
+#reg .screen.active{display:flex}
+#reg .hero{
+    position:relative;flex:0 0 39.5%;background:var(--hero);overflow:hidden;
+  }
+#reg .hero svg{position:absolute;inset:0;width:100%;height:100%}
+#reg .back-circle{
+    position:absolute;top:calc(env(safe-area-inset-top,0px) + 20px);right:12px;
+    width:36px;height:36px;border-radius:50%;background:rgba(80,86,96,.82);
+    display:flex;align-items:center;justify-content:center;border:0;cursor:pointer;
+  }
+#reg .sheet{
+    flex:1;background:var(--bg);border-radius:28px 28px 0 0;margin-top:-4px;
+    padding:26px 16px 0;position:relative;display:flex;flex-direction:column;
+  }
+#reg .sheet h1{font-size:22px;font-weight:700;color:#0A2A48;margin:0 4px 16px;line-height:1.3}
+#reg .method{
+    width:100%;display:flex;align-items:center;gap:14px;background:var(--white);
+    border:0;border-radius:20px;height:64px;padding:0 12px 0 16px;margin-bottom:8px;
+    cursor:pointer;text-align:right;color:var(--navy);font-size:14.5px;
+    transition:transform .12s ease;
+  }
+#reg .method:active{transform:scale(.985)}
+#reg .method .ic{
+    order:-1;flex:0 0 40px;width:40px;height:40px;border-radius:50%;background:var(--chip);
+    display:flex;align-items:center;justify-content:center;
+  }
+#reg .method span{flex:1}
+#reg .have-account{
+    margin-top:auto;margin-bottom:calc(env(safe-area-inset-bottom,0px) + 40px);
+    text-align:center;font-size:14px;color:#3B4E62;
+  }
+#reg .have-account a{color:var(--blue);text-decoration:none;margin-right:8px}
+#reg .home-bar{
+    position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:38%;height:4px;border-radius:3px;background:#2B2F36;opacity:.8;pointer-events:none;
+  }
+#reg .topbar{
+    flex:0 0 auto;background:var(--white);height:56px;display:flex;align-items:center;
+    justify-content:center;position:relative;padding-top:env(safe-area-inset-top,0px);
+    box-sizing:content-box;box-shadow:0 1px 0 #E3E8EE;
+  }
+#reg .topbar .ttl{text-align:center;line-height:1.15}
+#reg .topbar .ttl b{display:block;font-weight:400;font-size:17px;color:var(--title)}
+#reg .topbar .ttl small{font-size:12px;color:var(--label)}
+#reg .topbar .arrow{
+    position:absolute;right:14px;top:50%;margin-top:calc(env(safe-area-inset-top,0px)/2 - 14px);
+    background:none;border:0;cursor:pointer;width:32px;height:28px;display:flex;align-items:center;justify-content:center;
+  }
+#reg .form-scroll{flex:1;overflow-y:auto;padding:12px 12px 16px}
+#reg .card{background:var(--white);border-radius:20px;padding:14px 14px 18px}
+#reg .field{position:relative;padding-top:16px;margin-bottom:14px}
+#reg .field:last-child{margin-bottom:0}
+#reg .field label{position:absolute;top:0;right:0;font-size:11.5px;color:var(--label)}
+#reg .field .sel,#reg .field input{
+    width:100%;border:0;border-bottom:1.5px solid var(--line);background:transparent;
+    font-size:16.5px;color:var(--navy);padding:6px 0 8px;outline:none;text-align:right;
+    appearance:none;-webkit-appearance:none;border-radius:0;
+  }
+#reg .field select{padding-left:34px}
+#reg .field .chev{position:absolute;left:2px;bottom:12px;pointer-events:none;width:18px;height:18px}
+#reg .field input::placeholder{color:#9AB0C4}
+#reg .field input:focus,#reg .field select:focus{border-bottom-color:var(--blue)}
+#reg .promo{margin-top:20px}
+#reg .promo input{font-size:16px}
+#reg .doc-link{
+    display:flex;align-items:center;gap:10px;margin:22px 12px 0 0;color:var(--link);font-size:15px;
+    cursor:pointer;background:none;border:0;text-align:right;width:calc(100% - 14px);
+  }
+#reg .doc-link + .doc-link{margin-top:20px}
+#reg .doc-ic{
+    flex:0 0 18px;width:18px;height:18px;border-radius:4px;background:#4A90D9;
+    display:flex;align-items:center;justify-content:center;
+  }
+#reg .agree{display:flex;align-items:flex-start;gap:10px;margin:20px 12px 0 12px;font-size:14px;line-height:1.5;color:#1F3A55;cursor:pointer}
+#reg .agree .cb{
+    flex:0 0 18px;width:18px;height:18px;border:2px solid #6E8CA8;border-radius:3px;margin-top:2px;
+    display:flex;align-items:center;justify-content:center;background:transparent;transition:.15s;
+  }
+#reg .agree.on .cb{background:var(--green);border-color:var(--green)}
+#reg .agree .cb svg{display:none}
+#reg .agree.on .cb svg{display:block}
+#reg .agree.err .cb{border-color:#E0524A}
+#reg .agree.err{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(6px)}75%{transform:translateX(-6px)}}
+#reg .bottom{
+    flex:0 0 auto;background:var(--white);border-radius:24px 24px 0 0;
+    padding:12px 12px calc(env(safe-area-inset-bottom,0px) + 14px);
+  }
+#reg .btn{
+    width:100%;height:44px;border:0;border-radius:10px;background:var(--green);color:#fff;
+    font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s;
+  }
+#reg .btn:disabled{opacity:.65;cursor:default}
+#reg .spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+#reg .dim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+#reg .dim.show{opacity:1;pointer-events:auto}
+#reg .done{
+    position:fixed;left:50%;bottom:0;width:100%;max-width:520px;background:var(--white);
+    border-radius:22px 22px 0 0;padding:28px 16px calc(env(safe-area-inset-bottom,0px) + 14px);
+    transform:translate(-50%,105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);z-index:21;
+  }
+#reg .done.show{transform:translate(-50%,0)}
+#reg .ok{
+    width:72px;height:72px;border-radius:50%;background:var(--green-soft);margin:0 auto 14px;
+    display:flex;align-items:center;justify-content:center;
+  }
+#reg .ok i{width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center}
+#reg .done h2{text-align:center;font-size:20px;font-weight:700;color:#0A2A48;margin-bottom:14px;line-height:1.3}
+#reg .creds{background:var(--chip);border-radius:14px;padding:12px 16px;margin-bottom:8px}
+#reg .creds .row{display:flex;justify-content:space-between;align-items:center;direction:rtl}
+#reg .creds .row + .row{margin-top:8px}
+#reg .creds .k{font-size:15px;color:#5B84A8}
+#reg .creds .v{font-size:18px;font-weight:700;color:#0A2A48;direction:ltr;letter-spacing:.3px;font-family:'Noto Naskh Arabic',sans-serif}
+#reg .acts{display:flex;gap:8px;margin-bottom:26px}
+#reg .act{
+    flex:1;height:48px;border:0;border-radius:14px;background:var(--chip);color:#5B84A8;
+    font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+  }
+#reg .act:active{background:#E3E9EF}
+#reg .done .btn{height:40px;border-radius:10px;font-size:15px}
+#reg .toast{
+    position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translate(-50%,-30px);
+    background:#1F2A37;color:#fff;font-size:15px;padding:12px 18px;border-radius:14px;opacity:0;
+    transition:.25s;z-index:50;max-width:88%;text-align:center;pointer-events:none;
+  }
+#reg .toast.show{opacity:1;transform:translate(-50%,0)}
+#reg .toast.bad{background:#C2413A}
+#reg .doc-body{padding:20px 22px;font-size:16px;line-height:1.9;color:#2B3F55;overflow-y:auto;flex:1;background:var(--white)}
+#reg .doc-body h3{margin:14px 0 4px;color:var(--navy)}
+</style>
+<script src="wallet.js"></script>
+</head>
+<body>
+
+<!-- ============ صفحة تسجيل الدخول (الصفحة الأولى) ============ -->
+<div id="scLogin">
+<div class="hero">
+  <svg viewBox="0 0 360 280" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="rg" cx="40%" cy="75%" r="80%">
+        <stop offset="0" stop-color="#E24A4A"/><stop offset="1" stop-color="#B22A2A"/>
+      </radialGradient>
+      <linearGradient id="vg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#D3DFEB"/><stop offset="1" stop-color="#7F9CBB"/>
+      </linearGradient>
+      <radialGradient id="wg" cx="38%" cy="28%" r="78%">
+        <stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#CBD6E6"/><stop offset="1" stop-color="#5F7BA0"/>
+      </radialGradient>
+      <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#E9ECF0" stop-opacity="0"/><stop offset="1" stop-color="#E9ECF0"/>
+      </linearGradient>
+    </defs>
+    <!-- كرة الطائرة (يمين) -->
+    <circle cx="330" cy="-45" r="170" fill="url(#vg)"/>
+    <circle cx="330" cy="-45" r="160" fill="none" stroke="#2D87E8" stroke-width="22"/>
+    <circle cx="330" cy="-45" r="171" fill="none" stroke="#1A5FB8" stroke-width="1.5" opacity=".6"/>
+    <!-- الكرة الحمراء (يسار) -->
+    <circle cx="150" cy="-1" r="90" fill="url(#rg)"/>
+    <path d="M70 -10 Q95 -4 118 30 L100 70 Q72 40 62 10Z" fill="#fff" opacity=".28"/>
+    <path d="M118 -2 Q142 8 150 60 L132 84 Q128 40 108 14Z" fill="#fff" opacity=".18"/>
+    <!-- كرة البيسبول -->
+    <circle cx="201" cy="95" r="52" fill="url(#wg)"/>
+    <g fill="none" stroke="#8C9DB8" stroke-width="2" stroke-linecap="round">
+      <path d="M167 62 Q181 86 175 126"/><path d="M158 74l10 3M159 88l10 2M161 102l10 0M165 116l9 -2"/>
+      <path d="M232 58 Q221 88 233 124"/><path d="M243 74l-10 2M241 90l-10 1M240 106l-10 -1M242 118l-9 -2"/>
+    </g>
+    <!-- ضباب ناعم أسفل الصورة -->
+    <circle cx="30" cy="205" r="62" fill="#E3E6EA" opacity=".7"/>
+    <rect x="0" y="190" width="360" height="90" fill="url(#fade)"/>
+  </svg>
+</div>
+
+<main class="form">
+  <h1>تسجيل الدخول</h1>
+
+  <div class="field">
+    <input type="text" id="user" placeholder="البريد الإلكتروني أو اسم المستخدم" autocomplete="username" autocapitalize="none" spellcheck="false">
+  </div>
+
+  <div class="field pw">
+    <input type="password" id="pass" placeholder="كلمة المرور" autocomplete="current-password">
+    <button class="eye" id="eye" type="button" aria-label="إظهار كلمة المرور">
+      <svg width="26" height="20" viewBox="0 0 26 20">
+        <path d="M1 10C4 4 8.5 1.5 13 1.5S22 4 25 10c-3 6-7.5 8.5-12 8.5S4 16 1 10z" fill="#EDEDED" stroke="#8C8C8C" stroke-width="1"/>
+        <circle cx="13" cy="10" r="5.2" fill="#8B5E3C"/><circle cx="13" cy="10" r="2.4" fill="#1C1209"/><circle cx="11.6" cy="8.6" r="1" fill="#fff" opacity=".8"/>
+      </svg>
+    </button>
+  </div>
+
+  <button class="btn" id="btnLogin">دخول</button>
+
+  <a class="new" href="#" id="toRegister">إنشاء حساب جديد</a>
+</main>
+
+<div class="toast" id="toastL"></div>
+</div>
+
+<!-- ============ صفحة التسجيل ============ -->
+<div id="reg">
+<!-- ===================== الشاشة 1: اختيار طريقة التسجيل ===================== -->
+<section class="screen active" id="scChoose">
+  <div class="hero">
+    <!-- خلفية الأيقونات الرياضية -->
+    <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="sp" width="150" height="150" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#A9C6E0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="30" cy="30" r="20"/><path d="M10 30h40M30 10v40M16 16q14 14 0 28M44 16q-14 14 0 28"/>
+            <circle cx="110" cy="28" r="14"/><circle cx="110" cy="28" r="6"/>
+            <path d="M80 70l30 -10 8 22 -30 10z"/><circle cx="92" cy="82" r="3"/>
+            <path d="M22 96h36v8H22zM14 92v16M66 92v16M10 96v8M70 96v8"/>
+            <circle cx="120" cy="112" r="16"/><path d="M104 112h32M120 96q-8 16 0 32"/>
+            <path d="M60 130l8 -18 8 18zM64 124h8"/>
+            <rect x="84" y="118" width="22" height="18" rx="3"/>
+            <path d="M40 60l10 6-6 10"/>
+          </g>
+          <g fill="#A9C6E0"><circle cx="68" cy="20" r="3"/><circle cx="138" cy="70" r="3"/><circle cx="12" cy="130" r="3"/></g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#sp)"/>
+    </svg>
+    <button class="back-circle" id="btnBackHome" aria-label="رجوع">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+
+  <div class="sheet">
+    <h1>التسجيل</h1>
+
+    <button class="method" data-m="oneclick">
+      <span>بنقرة واحدة</span>
+      <i class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="#4A90D9"><path d="M13 2L4 14h6l-2 8 10-13h-6z"/></svg></i>
+    </button>
+    <button class="method" data-m="phone">
+      <span>عن طريق الهاتف</span>
+      <i class="ic"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3" fill="#4A90D9"/><circle cx="12" cy="18" r="1.2" fill="#fff"/><rect x="8.5" y="4.5" width="7" height="10" rx="1" fill="#6FA9E4"/></svg></i>
+    </button>
+    <button class="method" data-m="email">
+      <span>عبر البريد الالكتروني</span>
+      <i class="ic"><svg width="24" height="24" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="#4A90D9"/><path d="M4 7l8 6 8-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>
+    </button>
+    <button class="method" data-m="social">
+      <span>من خلال وسائل التواصل الاجتماعي</span>
+      <i class="ic"><svg width="26" height="26" viewBox="0 0 26 26"><g fill="#4A90D9"><circle cx="13" cy="5" r="3"/><circle cx="5" cy="13" r="3"/><circle cx="20" cy="9" r="3"/><circle cx="19" cy="20" r="3"/><circle cx="9" cy="21" r="2.4"/></g><circle cx="13" cy="13" r="2" fill="#4A90D9"/></svg></i>
+    </button>
+
+    <div class="have-account">لديك حساب من قبل؟ <a href="#" id="toLogin">تسجيل الدخول</a></div>
+  </div>
+  <div class="home-bar"></div>
+</section>
+
+<!-- ===================== الشاشة 2: التسجيل بنقرة واحدة ===================== -->
+<section class="screen" id="scOne">
+  <div class="topbar">
+    <div class="ttl"><b>التسجيل</b><small>بنقرة واحدة</small></div>
+    <button class="arrow" id="btnBackChoose" aria-label="رجوع">
+      <svg width="24" height="21" viewBox="0 0 30 26" fill="none" stroke="#5B84A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h24M18 4l9 9-9 9"/></svg>
+    </button>
+  </div>
+
+  <div class="form-scroll">
+    <div class="card">
+      <div class="field">
+        <label>البلد *</label>
+        <select class="sel" id="fCountry"></select>
+        <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B84A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg>
+      </div>
+      <div class="field">
+        <label>عملة *</label>
+        <select class="sel" id="fCurrency"></select>
+        <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B84A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg>
+      </div>
+      <div class="field">
+        <label>المكافأة</label>
+        <select class="sel" id="fBonus">
+          <option value="sport">مكافأة الرياضة</option>
+          <option value="casino">مكافأة الكازينو</option>
+          <option value="none">رفض المكافآت</option>
+        </select>
+        <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B84A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg>
+      </div>
+      <div class="field promo">
+        <input type="text" id="fPromo" placeholder="الرمز الترويجي (اختياري)" autocomplete="off" autocapitalize="characters">
+      </div>
+    </div>
+
+    <button class="doc-link" id="lnkTerms">
+      <i class="doc-ic"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M6 6h12M6 12h12M6 18h7"/></svg></i>
+      <span>الأحكام والشروط</span>
+    </button>
+    <button class="doc-link" id="lnkPrivacy">
+      <i class="doc-ic"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M6 6h12M6 12h12M6 18h7"/></svg></i>
+      <span>سياسة الخصوصية</span>
+    </button>
+
+    <div class="agree" id="agree">
+      <div class="cb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <div>إن عمري يتجاوز 18 عامًا وأؤكد أنني قرأت ووافقت على شروط وأحكام الشركة وسياسة الخصوصية.</div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <button class="btn" id="btnRegister">التسجيل</button>
+  </div>
+  <div class="home-bar"></div>
+</section>
+
+<!-- ===================== شاشة النصوص (الشروط / الخصوصية) ===================== -->
+<section class="screen" id="scDoc">
+  <div class="topbar">
+    <div class="ttl"><b id="docTitle"></b></div>
+    <button class="arrow" id="btnBackDoc" aria-label="رجوع">
+      <svg width="24" height="21" viewBox="0 0 30 26" fill="none" stroke="#5B84A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h24M18 4l9 9-9 9"/></svg>
+    </button>
+  </div>
+  <div class="doc-body" id="docBody"></div>
+</section>
+
+<!-- ===================== نافذة نجاح التسجيل ===================== -->
+<div class="dim" id="dim"></div>
+<div class="done" id="done">
+  <div class="ok"><i><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i></div>
+  <h2>تم التسجيل بنجاح</h2>
+  <div class="creds">
+    <div class="row"><span class="k">Login:</span><span class="v" id="outLogin"></span></div>
+    <div class="row"><span class="k">كلمة المرور:</span><span class="v" id="outPass"></span></div>
+  </div>
+  <div class="acts">
+    <button class="act" id="btnCopy">
+      <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="13" height="15" rx="3" fill="#5B84A8" opacity=".9"/><rect x="8" y="7" width="13" height="15" rx="3" fill="#5B84A8"/></svg>
+      <span>نسخ</span>
+    </button>
+    <button class="act" id="btnShare">
+      <svg width="21" height="20" viewBox="0 0 24 24" fill="#5B84A8"><path d="M14 4l8 8-8 8v-5c-6 0-10 2-12 6 1-7 5-12 12-13z"/></svg>
+      <span>شارك</span>
+    </button>
+  </div>
+  <button class="btn" id="btnNext">التالي</button>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ===== التخزين المحلي للحسابات (على الجهاز فقط، بدون إنترنت) ===== */
+var Store = {
+  // قراءة كل الحسابات
+  accounts: function () {
+    try { return JSON.parse(localStorage.getItem("accounts") || "{}"); } catch (e) { return {}; }
+  },
+  // حفظ كل الحسابات (يرمي خطأ لو التخزين غير متاح)
+  save: function (acc) { localStorage.setItem("accounts", JSON.stringify(acc)); },
+  // الحساب المسجّل دخوله حاليًا
+  session: function () {
+    try { return localStorage.getItem("session"); } catch (e) { return null; }
+  },
+  setSession: function (login) { localStorage.setItem("session", login); },
+  clearSession: function () { try { localStorage.removeItem("session"); } catch (e) {} },
+  // تشفير كلمة المرور (SHA-256 ولو غير متاح نستخدم بديل بسيط)
+  hash: function (login, pass) {
+    var text = "lv|" + login + "|" + pass;
+    if (window.crypto && crypto.subtle && window.TextEncoder) {
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)).then(function (buf) {
+        return Array.prototype.map.call(new Uint8Array(buf), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+      });
+    }
+    var h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return Promise.resolve("f" + (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16));
+  }
+};
+
+var App = {
+  showRegister: function () {
+    document.getElementById("scLogin").classList.add("off");
+    document.getElementById("reg").classList.add("on");
+    document.title = "التسجيل";
+  },
+  showLogin: function () {
+    document.getElementById("reg").classList.remove("on");
+    document.getElementById("scLogin").classList.remove("off");
+    document.title = "تسجيل الدخول";
+  }
+};
+document.getElementById("toRegister").onclick = function (e) { e.preventDefault(); App.showRegister(); };
+document.getElementById("toLogin").onclick    = function (e) { e.preventDefault(); App.showLogin(); };
+</script>
+<script>
+/* ===== منطق صفحة تسجيل الدخول (محلي) ===== */
+(function () {
+  const $ = id => document.getElementById(id);
+  const MAIN_PAGE = "maino.html";
+
+  // لو المستخدم مسجّل دخول من قبل ندخله مباشرة على الصفحة الرئيسية
+  if (Store.session() && Store.accounts()[Store.session()]) { location.replace(MAIN_PAGE); return; }
+
+  let toastTimer;
+  function toast(msg){
+    const t = $("toastL"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
+  }
+
+  // إظهار / إخفاء كلمة المرور
+  $("eye").onclick = () => {
+    const i = $("pass"); i.type = i.type === "password" ? "text" : "password";
+  };
+
+  const btn = $("btnLogin");
+  async function doLogin(){
+    const u = $("user").value.trim();
+    const p = $("pass").value;
+    if (!u) { toast("أدخل البريد الإلكتروني أو اسم المستخدم"); $("user").focus(); return; }
+    if (!p) { toast("أدخل كلمة المرور"); $("pass").focus(); return; }
+    try {
+      const acc = Store.accounts()[u];
+      const h = await Store.hash(u, p);
+      if (!acc || acc.pass !== h) { toast("بيانات الدخول غير صحيحة"); return; }
+      Store.setSession(u);
+      location.replace(MAIN_PAGE);
+    } catch (e) {
+      console.error(e);
+      toast("تعذّر القراءة من الجهاز، فعّل DOM Storage");
+    }
+  }
+  btn.onclick = doLogin;
+  [$("user"), $("pass")].forEach(i => i.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); }));
+})();
+</script>
+<script>
+/* ===== منطق صفحة التسجيل ===== */
+(function () {
+
+/* ===== ملف التسجيل - حفظ محلي على الجهاز ===== */
+
+/* ---------- بيانات الدول والعملات ---------- */
+const COUNTRIES = [
+  ["مصر","EGP"],["السعودية","SAR"],["الإمارات","AED"],["الكويت","KWD"],["قطر","QAR"],
+  ["البحرين","BHD"],["عُمان","OMR"],["الأردن","JOD"],["لبنان","LBP"],["العراق","IQD"],
+  ["سوريا","SYP"],["فلسطين","ILS"],["اليمن","YER"],["ليبيا","LYD"],["تونس","TND"],
+  ["الجزائر","DZD"],["المغرب","MAD"],["السودان","SDG"],["موريتانيا","MRU"],["تركيا","TRY"],
+  ["الولايات المتحدة","USD"],["المملكة المتحدة","GBP"],["ألمانيا","EUR"],["فرنسا","EUR"],
+  ["إيطاليا","EUR"],["إسبانيا","EUR"],["كندا","CAD"],["الهند","INR"],["باكستان","PKR"]
+];
+const CURRENCIES = [
+  ["EGP","جنيه مصري"],["SAR","ريال سعودي"],["AED","درهم إماراتي"],["KWD","دينار كويتي"],
+  ["QAR","ريال قطري"],["BHD","دينار بحريني"],["OMR","ريال عماني"],["JOD","دينار أردني"],
+  ["LBP","ليرة لبنانية"],["IQD","دينار عراقي"],["SYP","ليرة سورية"],["ILS","شيكل"],
+  ["YER","ريال يمني"],["LYD","دينار ليبي"],["TND","دينار تونسي"],["DZD","دينار جزائري"],
+  ["MAD","درهم مغربي"],["SDG","جنيه سوداني"],["MRU","أوقية موريتانية"],["TRY","ليرة تركية"],
+  ["USD","دولار أمريكي"],["EUR","يورو"],["GBP","جنيه إسترليني"],["CAD","دولار كندي"],
+  ["INR","روبية هندية"],["PKR","روبية باكستانية"]
+];
+
+const $ = id => document.getElementById(id);
+const fCountry = $("fCountry"), fCurrency = $("fCurrency"), fBonus = $("fBonus");
+
+// تعبئة القوائم
+COUNTRIES.forEach(([n,c],i) => fCountry.add(new Option(n, i)));
+CURRENCIES.forEach(([c,n]) => fCurrency.add(new Option(`${n} (${c})`, c)));
+fCountry.value = 0;       // مصر
+fCurrency.value = "EGP";  // جنيه مصري
+
+// عند تغيير البلد تتغير العملة تلقائيًا
+fCountry.addEventListener("change", () => {
+  fCurrency.value = COUNTRIES[fCountry.value][1];
+});
+
+/* ---------- التنقل بين الشاشات ---------- */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+let toastTimer;
+function toast(msg, bad = true){
+  const t = $("toast");
+  t.textContent = msg;
+  t.className = "toast show" + (bad ? " bad" : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+// زر الرجوع في أعلى الشاشة الأولى
+$("btnBackHome").onclick = () => { App.showLogin(); };
+$("btnBackChoose").onclick = () => show("scChoose");
+
+// اختيار طريقة التسجيل
+document.querySelectorAll(".method").forEach(b => {
+  b.onclick = () => {
+    if (b.dataset.m === "oneclick") show("scOne");
+    else toast("هذه الطريقة غير متاحة حاليًا، استخدم التسجيل بنقرة واحدة", false);
+  };
+});
+
+/* ---------- الأحكام والخصوصية ---------- */
+const DOCS = {
+  terms: ["الأحكام والشروط",
+    "<h3>1. القبول</h3>باستخدامك للتطبيق فإنك توافق على هذه الشروط.<h3>2. العمر</h3>يجب ألا يقل عمر المستخدم عن 18 عامًا.<h3>3. الحساب</h3>أنت مسؤول عن الحفاظ على سرية بيانات الدخول الخاصة بك.<h3>4. الاستخدام</h3>يمنع استخدام الحساب لأي غرض مخالف للقانون."],
+  privacy: ["سياسة الخصوصية",
+    "<h3>البيانات التي نجمعها</h3>البلد والعملة ومعرّف الحساب وتاريخ التسجيل.<h3>كيف نستخدمها</h3>لإنشاء حسابك وتشغيل خدمات التطبيق فقط.<h3>الأمان</h3>لا نخزّن كلمة المرور بشكل نصي، ويتم حفظها مشفّرة عبر خدمة المصادقة."]
+};
+function openDoc(k){
+  $("docTitle").textContent = DOCS[k][0];
+  $("docBody").innerHTML = DOCS[k][1];
+  show("scDoc");
+}
+$("lnkTerms").onclick   = () => openDoc("terms");
+$("lnkPrivacy").onclick = () => openDoc("privacy");
+$("btnBackDoc").onclick = () => show("scOne");
+
+/* ---------- مربع الموافقة ---------- */
+const agree = $("agree");
+agree.onclick = () => { agree.classList.toggle("on"); agree.classList.remove("err"); };
+
+/* ---------- توليد بيانات الدخول ---------- */
+function randInt(max){
+  const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % max;
+}
+// رقم دخول من 10 أرقام (يبدأ بـ 1)
+function genLogin(){
+  let s = "1";
+  for (let i = 0; i < 9; i++) s += randInt(10);
+  return s;
+}
+// كلمة مرور من 8 خانات: حروف كبيرة وصغيرة وأرقام (بدون الحروف المتشابهة)
+function genPassword(){
+  const L = "ABCDEFGHJKLMNPQRSTUVWXYZ", l = "abcdefghijkmnpqrstuvwxyz", d = "23456789";
+  const all = L + l + d;
+  let p = [L[randInt(L.length)], l[randInt(l.length)], d[randInt(d.length)]];
+  while (p.length < 8) p.push(all[randInt(all.length)]);
+  for (let i = p.length - 1; i > 0; i--) { const j = randInt(i + 1); [p[i], p[j]] = [p[j], p[i]]; }
+  return p.join("");
+}
+/* ---------- تنفيذ التسجيل (فوري ومحلي) ---------- */
+let creds = null;
+let createDone = false;
+
+function closeDone(){
+  $("dim").classList.remove("show");
+  $("done").classList.remove("show");
+}
+
+const btnRegister = $("btnRegister");
+btnRegister.onclick = async () => {
+  if (!agree.classList.contains("on")) {
+    agree.classList.remove("err"); void agree.offsetWidth; agree.classList.add("err");
+    toast("يجب الموافقة على الشروط وسياسة الخصوصية أولًا");
+    return;
+  }
+  try {
+    const acc = Store.accounts();
+
+    // رقم دخول غير مكرر + كلمة مرور
+    let login = genLogin();
+    while (acc[login]) login = genLogin();
+    const password = genPassword();
+
+    const [countryName] = COUNTRIES[fCountry.value];
+    acc[login] = {
+      pass: await Store.hash(login, password),   // لا نحفظ كلمة المرور نصًا
+      country: countryName,
+      currency: fCurrency.value,
+      bonus: fBonus.value,
+      promoCode: $("fPromo").value.trim() || null,
+      method: "oneclick",
+      ageConfirmed: true,
+      createdAt: Date.now()
+    };
+    Store.save(acc);   // يرمي خطأ لو التخزين غير متاح
+
+    creds = { login, password };
+    createDone = true;
+    $("outLogin").textContent = login;
+    $("outPass").textContent  = password;
+    $("dim").classList.add("show");
+    $("done").classList.add("show");
+  } catch (e) {
+    console.error(e);
+    toast("تعذّر الحفظ على الجهاز، فعّل DOM Storage أو أعد المحاولة");
+  }
+};
+
+/* ---------- نسخ ومشاركة ---------- */
+const credText = () => `Login: ${creds.login}\nكلمة المرور: ${creds.password}`;
+
+$("btnCopy").onclick = async () => {
+  if (!creds) return;
+  try {
+    await navigator.clipboard.writeText(credText());
+  } catch {
+    // طريقة بديلة للمتصفحات القديمة
+    const ta = document.createElement("textarea");
+    ta.value = credText(); document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove();
+  }
+  toast("تم النسخ", false);
+};
+$("btnShare").onclick = async () => {
+  if (!creds) return;
+  if (navigator.share) {
+    try { await navigator.share({ text: credText() }); } catch {}
+  } else {
+    $("btnCopy").click();
+  }
+};
+
+/* ---------- التالي: الانتقال للصفحة الرئيسية ---------- */
+$("btnNext").onclick = () => {
+  if (!createDone || !creds) return;
+  try { Store.setSession(creds.login); } catch (e) {}
+  location.href = "maino.html";
+};
+})();
+</script>
+</body>
+</html>
